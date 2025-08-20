@@ -69,7 +69,7 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
         operand_index=0, k_width=2),
     ttgl.SliceLayout(
         dim=0, parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #
-                                                  cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8 ])), #
+                                                  cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8])), #
     ttgl.SliceLayout(
         dim=1, parent=ttgl.DotOperandLayout(
             parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #

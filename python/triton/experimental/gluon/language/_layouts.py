@@ -237,7 +237,7 @@ class NVMMADistributedLayout(DistributedLayout):
         super().__setattr__("cta_split_num", _unwrap_if_constexpr(self.cta_split_num))
         super().__setattr__("cta_order", _unwrap_if_constexpr(self.cta_order))
 
-        rank = 2
+        rank = len(self.warps_per_cta)
         _realize_cta_layout(self, rank)
         assert len(self.ctas_per_cga) == rank
         assert len(self.cta_split_num) == rank
