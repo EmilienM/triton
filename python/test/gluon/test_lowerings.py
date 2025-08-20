@@ -61,11 +61,11 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
                                 cta_order=[1, 0], instr_shape=[16, 16, 16]),
     ttgl.DotOperandLayout(
         parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[2, 4], ctas_per_cga=[1, 1],  #
-                                           cta_split_num=[1, 1], cta_order=[0, 1], instr_shape=[16, 8]),
+                                           cta_split_num=[1, 1], cta_order=[0, 1], instr_shape=[16, 8]), #
         operand_index=1, k_width=8),
     ttgl.DotOperandLayout(
         parent=ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[8, 1], ctas_per_cga=[1, 1],  #
-                                           cta_split_num=[1, 1], cta_order=[1, 0], instr_shape=[16, 32, 16]),
+                                           cta_split_num=[1, 1], cta_order=[1, 0], instr_shape=[16, 32, 16]), #
         operand_index=0, k_width=2),
     ttgl.SliceLayout(
         dim=0, parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #
@@ -73,16 +73,16 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
     ttgl.SliceLayout(
         dim=1, parent=ttgl.DotOperandLayout(
             parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #
-                                               cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8]),
+                                               cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8]), #
             operand_index=1, k_width=2)),
     "linear_layout",
 ])
 @pytest.mark.parametrize("axis", [0, 1])
 @pytest.mark.parametrize("epilogue_kind", ['reduce1d', 'reduce2d', 'expand_reduce2d'])
-@pytest.mark.parametrize("dtype_str, add_overflow_check", [("int32", False), ("int32", True), ("float32", False),
+@pytest.mark.parametrize("dtype_str, sanitize_overflow", [("int32", False), ("int32", True), ("float32", False),
                                                            ("float16", False)])
 @pytest.mark.parametrize("reduce_op", ["sum", "max"])
-def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, add_overflow_check, reduce_op, device):
+def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, sanitize_overflow, reduce_op, device):
     if src_layout == "linear_layout":
         ttgl.DistributedLinearLayout(reg_bases=[[0, 16], [1, 0], [2, 0], [4, 0], [8, 0], [16, 0]],  #
                                      lane_bases=[[0, 0], [0, 1], [0, 2], [0, 4], [0, 8]],  #
@@ -127,7 +127,9 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, add_ov
     out_shape = (1, 1) if epilogue_kind == "reduce2d" else (N, ) if axis == 0 else (M, )
     z = torch.empty(out_shape, dtype=torch.int32, device=device)
 
-    kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=4)
+    kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=4,
+                      epilogue_kind=epilogue_kind, sanitize_overflow=sanitize_overflow,
+                      debug=sanitize_overflow)
 
     torch_op = torch.sum if reduce_op == "sum" else torch.max
     z_ref = torch_op(x) if epilogue_kind == "reduce1d" else torch_op(x, dim=axis, keepdim=True)
