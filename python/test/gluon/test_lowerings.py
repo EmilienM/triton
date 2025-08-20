@@ -84,7 +84,7 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
 @pytest.mark.parametrize("reduce_op", ["sum", "max"])
 def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, sanitize_overflow, reduce_op, device):
     if src_layout == "linear_layout":
-        ttgl.DistributedLinearLayout(reg_bases=[[0, 16], [1, 0], [2, 0], [4, 0], [8, 0], [16, 0]],  #
+        src_layout = ttgl.DistributedLinearLayout(reg_bases=[[0, 16], [1, 0], [2, 0], [4, 0], [8, 0], [16, 0]],  #
                                      lane_bases=[[0, 0], [0, 1], [0, 2], [0, 4], [0, 8]],  #
                                      warp_bases=[[32, 0], [0, 32]], block_bases=[], shape=[M, N])
 
