@@ -132,5 +132,5 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, saniti
                       debug=sanitize_overflow)
 
     torch_op = torch.sum if reduce_op == "sum" else torch.max
-    z_ref = torch_op(x) if epilogue_kind == "reduce1d" else torch_op(x, dim=axis, keepdim=True)
+    z_ref = torch_op(x, dim=axis, keepdim=True) if epilogue_kind == "reduce1d" else torch_op(x)
     torch.testing.assert_close(z, z_ref)
