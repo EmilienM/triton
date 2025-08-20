@@ -125,7 +125,7 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, saniti
     torch_dtype = getattr(torch, dtype_str)
     x = torch.randint(-10, 10, (M, N), dtype=torch.int32, device=device).to(torch_dtype)
     out_shape = (1, 1) if epilogue_kind == "reduce2d" else (1, N) if axis == 0 else (M, 1)
-    z = torch.empty(out_shape, dtype=torch.int32, device=device)
+    z = torch.empty(out_shape, dtype=torch_dtype, device=device)
 
     kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=4,
                       epilogue_kind=epilogue_kind, sanitize_overflow=sanitize_overflow,
