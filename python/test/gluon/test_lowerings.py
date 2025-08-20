@@ -59,12 +59,14 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
               instr_shape=[16, 8]),
     ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[4, 1], ctas_per_cga=[1, 1], cta_split_num=[1, 1], cta_order=[1, 0],
               instr_shape=[16, 16, 16]),
-    ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout([2, 0], [2, 4], [16, 8], [1, 1], [1, 1], [0, 1]), operand_index=1, k_width=8),
-    ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout([3, 0], [8, 1], [16, 32, 16], [1, 1], [1, 1], [0, 1]), operand_index=0, k_width=2),
-    ttgl.SliceLayout(dim=0, parent=ttgl.NVMMADistributedLayout([2, 0], [4, 1, 1], [1, 1, 1], [1, 1, 1], [2, 1, 0], [1, 16, 8])),
-    ttgl.SliceLayout(
-        dim=1, parent=ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout([2, 0], [4, 1, 1], [1, 16, 8], [1, 1, 1], [1, 1, 1], [2, 1, 0]),
-                                       operand_index=1, k_width=2)),
+    ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[2, 4], ctas_per_cga=[1, 1], cta_split_num=[1, 1], cta_order=[0, 1],
+              instr_shape=[16, 8]), operand_index=1, k_width=8),
+    ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[8, 1], ctas_per_cga=[1, 1], cta_split_num=[1, 1], cta_order=[1, 0],
+              instr_shape=[16, 32, 16]), operand_index=0, k_width=2),
+    ttgl.SliceLayout(dim=0, parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1], cta_split_num=[1, 1, 1], cta_order=[2, 1, 0],
+              instr_shape=[1, 16, 8])),
+    ttgl.SliceLayout(dim=1, parent=ttgl.DotOperandLayout(parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],
+              cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8]), operand_index=1, k_width=2)),
     "linear_layout",
 ])
 @pytest.mark.parametrize("axis", [0, 1])
