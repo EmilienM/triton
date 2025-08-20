@@ -128,7 +128,7 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, saniti
     z = torch.empty(out_shape, dtype=torch_dtype, device=device)
 
     num_warps = ttgl._layouts.warps_per_cta(src_layout, (M, N))
-    kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=4,
+    kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=num_warps,
                       epilogue_kind=epilogue_kind, sanitize_overflow=sanitize_overflow,
                       debug=sanitize_overflow)
 
