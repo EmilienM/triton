@@ -133,4 +133,4 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, saniti
 
     torch_op = torch.sum if reduce_op == "sum" else torch.max
     z_ref = torch_op(x, dim=axis, keepdim=True) if epilogue_kind == "reduce1d" else torch_op(x)
-    torch.testing.assert_close(z, z_ref)
+    torch.testing.assert_close(z, z_ref.to(torch_dtype))
