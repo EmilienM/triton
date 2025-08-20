@@ -60,18 +60,21 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
     ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[4, 1], ctas_per_cga=[1, 1], cta_split_num=[1, 1],
                                 cta_order=[1, 0], instr_shape=[16, 16, 16]),
     ttgl.DotOperandLayout(
-        parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[2, 4], ctas_per_cga=[1, 1], #
-        cta_split_num=[ 1, 1 ], cta_order=[0, 1], instr_shape=[16, 8]), operand_index=1, k_width=8),
+        parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[2, 4], ctas_per_cga=[1, 1],  #
+                                           cta_split_num=[1, 1], cta_order=[0, 1], instr_shape=[16, 8]),
+        operand_index=1, k_width=8),
     ttgl.DotOperandLayout(
-        parent=ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[8, 1], ctas_per_cga=[1, 1], #
-        cta_split_num=[ 1, 1 ], cta_order=[1, 0], instr_shape=[16, 32, 16]), operand_index=0, k_width=2),
+        parent=ttgl.NVMMADistributedLayout(version=[3, 0], warps_per_cta=[8, 1], ctas_per_cga=[1, 1],  #
+                                           cta_split_num=[1, 1], cta_order=[1, 0], instr_shape=[16, 32, 16]),
+        operand_index=0, k_width=2),
     ttgl.SliceLayout(
-        dim=0, parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[ 1, 1, 1 ], #
-        cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8])),
+        dim=0, parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #
+                                                  cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8])),
     ttgl.SliceLayout(
         dim=1, parent=ttgl.DotOperandLayout(
-            parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[ 1, 1, 1 ], # 
-            cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8]), operand_index=1, k_width=2)),
+            parent=ttgl.NVMMADistributedLayout(version=[2, 0], warps_per_cta=[4, 1, 1], ctas_per_cga=[1, 1, 1],  #
+                                               cta_split_num=[1, 1, 1], cta_order=[2, 1, 0], instr_shape=[1, 16, 8]),
+            operand_index=1, k_width=2)),
     "linear_layout",
 ])
 @pytest.mark.parametrize("axis", [0, 1])
@@ -81,8 +84,8 @@ def test_scan_layouts(M, N, src_layout, axis, sanitize_overflow, device):
 @pytest.mark.parametrize("reduce_op", ["sum", "max"])
 def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, add_overflow_check, reduce_op, device):
     if src_layout == "linear_layout":
-        ttgl.DistributedLinearLayout(reg_bases=[[0, 16], [1, 0], [2, 0], [4, 0], [8, 0], [16, 0]],
-                                     lane_bases=[[0, 0], [0, 1], [0, 2], [0, 4], [0, 8]],
+        ttgl.DistributedLinearLayout(reg_bases=[[0, 16], [1, 0], [2, 0], [4, 0], [8, 0], [16, 0]], #
+                                     lane_bases=[[0, 0], [0, 1], [0, 2], [0, 4], [0, 8]], #
                                      warp_bases=[[32, 0], [0, 32]], block_bases=[], shape=[M, N])
 
     @gluon.jit
