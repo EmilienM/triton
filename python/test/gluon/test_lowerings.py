@@ -119,5 +119,5 @@ def test_reduce_layouts(M, N, src_layout, axis, epilogue_kind, dtype_str, add_ov
     kernel[(1, 1, 1)](x, z, M, N, src_layout, axis, num_warps=4)
 
     torch_op = torch.sum if reduce_op == "sum" else torch.max
-    z_ref = torch_op(x) if epilogue_kind == "reduce1d"
+    z_ref = torch_op(x) if epilogue_kind == "reduce1d" else torch_op(x, dim=axis, keepdim=True)
     torch.testing.assert_close(z, z_ref)
